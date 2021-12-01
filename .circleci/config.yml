@@ -1,13 +1,28 @@
 version: 2.1
 
 jobs:
-  hello-world:
-    docker: 
-      - image: cimg/node:latest
+  test:
+    docker:
+      - image: cimg/node:15.1
     steps:
-      - run: "echo hello-world"
+      - checkout
+      - restore_cache:
+          # See the configuration reference documentation for more details on using restore_cache and save_cache steps
+          # https://circleci.com/docs/2.0/configuration-reference/?section=reference#save_cache
+          keys:
+            - node-deps-v1-{{ .Branch }}-{{checksum "yarn.lock"}}
+      - run:
+          name: install packages
+          command: yarn install
+      - save_cache:
+          key: node-deps-v1-{{ .Branch }}-{{checksum "yarn.lock"}}
+          paths:
+            - ~/.npm
+      - run:
+          name: Run Tests
+          command: yarn test $TEST_PATHS
 
 workflows:
-  simple:
+  orb-free-workflow:
     jobs:
-        - hello-world
+      - test
