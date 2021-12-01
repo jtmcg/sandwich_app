@@ -1,32 +1,13 @@
-version: 2
-defaults: &defaults
-  working_directory: ~/repo
-  docker:
-    - image: circleci/node:14.15.4
-jobs:
-  core:
-    <<: *defaults
-    working_directory: ~/repo
-    steps:
-      - checkout
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-      - run: npm ci
-      - run: npm run test
-      - persist_to_workspace:
-          root: ~/repo
-          paths: [.]
-workflows:
-  version: 2
-  core:
-    jobs:
-      - core:
-          filters:
-            tags:
-              only: /^v.*/
+version: 2.1
 
-# test tags
+jobs:
+  hello-world:
+    docker: 
+      - image: cimg/node:latest
+    steps:
+      - run: "echo hello-world"
+
+workflows:
+  simple:
+    jobs:
+        - hello-world
